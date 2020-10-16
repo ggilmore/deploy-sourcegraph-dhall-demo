@@ -1,1 +1,5 @@
-{ port : Natural, name : Optional Text, protocol : Optional Text }
+{ port : Natural
+, appProtocol : Optional Text
+, name : Optional Text
+, protocol : Optional Text
+}

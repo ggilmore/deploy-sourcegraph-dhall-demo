@@ -3,5 +3,4 @@
 , max = None (List { mapKey : Text, mapValue : Text })
 , maxLimitRequestRatio = None (List { mapKey : Text, mapValue : Text })
 , min = None (List { mapKey : Text, mapValue : Text })
-, type = None Text
 }

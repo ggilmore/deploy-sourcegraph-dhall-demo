@@ -35,7 +35,7 @@ let configurationToK8s
                 }
                 c.ephemeralStorage
 
-        let all = memoryItem # cpuItem # ephemeralStorage
+        let all = cpuItem # memoryItem # ephemeralStorage
 
         in  if    List/null Util/KeyValuePair all
             then  None (List Util/KeyValuePair)
@@ -65,8 +65,8 @@ let tests =
                   }
                 }
             ≡ { limits = Some
-                [ { mapKey = "memory", mapValue = "20Gi" }
-                , { mapKey = "cpu", mapValue = "2" }
+                [ { mapKey = "cpu", mapValue = "2" }
+                , { mapKey = "memory", mapValue = "20Gi" }
                 ]
               , requests = Some
                 [ { mapKey = "cpu", mapValue = "500m" }
@@ -85,8 +85,8 @@ let tests =
             ≡ { limits = Some
                 [ { mapKey = "ephemeral-storage", mapValue = "200MB" } ]
               , requests = Some
-                [ { mapKey = "memory", mapValue = "100MB" }
-                , { mapKey = "cpu", mapValue = "500m" }
+                [ { mapKey = "cpu", mapValue = "500m" }
+                , { mapKey = "memory", mapValue = "100MB" }
                 ]
               }
       }

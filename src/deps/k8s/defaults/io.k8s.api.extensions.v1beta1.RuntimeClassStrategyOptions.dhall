@@ -1,1 +1,0 @@
-{ defaultRuntimeClassName = None Text }

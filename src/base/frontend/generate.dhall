@@ -90,6 +90,9 @@ let Kubernetes/Subject = ../../deps/k8s/schemas/io.k8s.api.rbac.v1.Subject.dhall
 let Kubernetes/VolumeMount =
       ../../deps/k8s/schemas/io.k8s.api.core.v1.VolumeMount.dhall
 
+let Kubernetes/IngressBackend =
+      ../../deps/k8s/schemas/io.k8s.api.networking.v1beta1.IngressBackend.dhall
+
 let Configuration/global = ../../configuration/global.dhall
 
 let Util/EmptyCacheSSDVolume = ../../util/empty-cache-ssd-volume.dhall
@@ -374,9 +377,10 @@ let Ingress/generate =
                     , http = Some Kubernetes/HTTPIngressRuleValue::{
                       , paths =
                         [ Kubernetes/HTTPIngressPath::{
-                          , backend =
-                            { serviceName = "sourcegraph-frontend"
-                            , servicePort = Kubernetes/IntOrString.Int 30080
+                          , backend = Kubernetes/IngressBackend::{
+                            , serviceName = Some "sourcegraph-frontend"
+                            , servicePort = Some
+                                (Kubernetes/IntOrString.Int 30080)
                             }
                           , path = Some "/"
                           }

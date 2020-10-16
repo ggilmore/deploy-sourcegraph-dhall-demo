@@ -1,16 +1,11 @@
 { controllerExpandSecretRef =
-    None
-      ../types/io.k8s.api.core.v1.SecretReference.dhall sha256:aac2bf127e8931850f04d76f4a3a0eb7deec3b4af46f018d4cd6560167e630df
+    None ./../types/io.k8s.api.core.v1.SecretReference.dhall
 , controllerPublishSecretRef =
-    None
-      ../types/io.k8s.api.core.v1.SecretReference.dhall sha256:aac2bf127e8931850f04d76f4a3a0eb7deec3b4af46f018d4cd6560167e630df
+    None ./../types/io.k8s.api.core.v1.SecretReference.dhall
 , fsType = None Text
 , nodePublishSecretRef =
-    None
-      ../types/io.k8s.api.core.v1.SecretReference.dhall sha256:aac2bf127e8931850f04d76f4a3a0eb7deec3b4af46f018d4cd6560167e630df
-, nodeStageSecretRef =
-    None
-      ../types/io.k8s.api.core.v1.SecretReference.dhall sha256:aac2bf127e8931850f04d76f4a3a0eb7deec3b4af46f018d4cd6560167e630df
+    None ./../types/io.k8s.api.core.v1.SecretReference.dhall
+, nodeStageSecretRef = None ./../types/io.k8s.api.core.v1.SecretReference.dhall
 , readOnly = None Bool
 , volumeAttributes = None (List { mapKey : Text, mapValue : Text })
 }

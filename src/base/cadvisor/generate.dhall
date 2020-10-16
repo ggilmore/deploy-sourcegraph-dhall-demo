@@ -52,7 +52,7 @@ let Kubernetes/HostPathVolumeSource =
       ../../deps/k8s/schemas/io.k8s.api.core.v1.HostPathVolumeSource.dhall
 
 let Kubernetes/PodSecurityPolicySpec =
-      ../../deps/k8s/schemas/io.k8s.api.extensions.v1beta1.PodSecurityPolicySpec.dhall
+      ../../deps/k8s/schemas/io.k8s.api.policy.v1beta1.PodSecurityPolicySpec.dhall
 
 let Kubernetes/AllowedHostPath =
       ../../deps/k8s/schemas/io.k8s.api.policy.v1beta1.AllowedHostPath.dhall
@@ -61,7 +61,7 @@ let Kubernetes/FSGroupStrategyOptions =
       ../../deps/k8s/schemas/io.k8s.api.policy.v1beta1.FSGroupStrategyOptions.dhall
 
 let Kubernetes/RunAsGroupStrategyOptions =
-      ../../deps/k8s/schemas/io.k8s.api.extensions.v1beta1.RunAsGroupStrategyOptions.dhall
+      ../../deps/k8s/schemas/io.k8s.api.policy.v1beta1.RunAsGroupStrategyOptions.dhall
 
 let Kubernetes/SELinuxStrategyOptions =
       ../../deps/k8s/schemas/io.k8s.api.policy.v1beta1.SELinuxStrategyOptions.dhall
@@ -74,6 +74,10 @@ let containerResources = ../../configuration/container-resources.dhall
 
 let containerResources/tok8s = ../../util/container-resources-to-k8s.dhall
 
+let Util/component-label = ../../util/component-label.dhall
+
+let componentLabel = Util/component-label "cadvisor"
+
 let DaemonSet/generate =
       λ(c : Configuration/global.Type) →
         let overrides = c.Cadvisor.DaemonSet.Containers.Cadvisor
@@ -81,7 +85,7 @@ let DaemonSet/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/cadvisor:3.17.2@sha256:9fb42b067d1f9cc84558f61b6ec42f8cfe7ad874625c7673efa9b1f047fa3ced"
+                "index.docker.io/sourcegraph/cadvisor:insiders@sha256:fc44bfeb8ac74e8476082cce046a023a6c321348aeb83049328a96c90eda70fb"
                 overrides.image
 
         let resources =
@@ -115,7 +119,8 @@ let DaemonSet/generate =
                     }
                   ]
                 , labels = Some
-                  [ { mapKey = "deploy", mapValue = "sourcegraph" }
+                  [ componentLabel
+                  , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "cluster-admin"
                     }
@@ -238,6 +243,7 @@ let ClusterRole/generate =
               , metadata = Kubernetes/ObjectMeta::{
                 , labels = Some
                   [ { mapKey = "app", mapValue = "cadvisor" }
+                  , componentLabel
                   , { mapKey = "category", mapValue = "rbac" }
                   , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
@@ -265,6 +271,7 @@ let ClusterRoleBinding/generate =
               , metadata = Kubernetes/ObjectMeta::{
                 , labels = Some
                   [ { mapKey = "app", mapValue = "cadvisor" }
+                  , componentLabel
                   , { mapKey = "category", mapValue = "rbac" }
                   , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
@@ -296,6 +303,7 @@ let ServiceAccount/generate =
               , metadata = Kubernetes/ObjectMeta::{
                 , labels = Some
                   [ { mapKey = "app", mapValue = "cadvisor" }
+                  , componentLabel
                   , { mapKey = "category", mapValue = "rbac" }
                   , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
@@ -315,6 +323,7 @@ let PodSecurityPolicy/generate =
               , metadata = Kubernetes/ObjectMeta::{
                 , labels = Some
                   [ { mapKey = "app", mapValue = "cadvisor" }
+                  , componentLabel
                   , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "cluster-admin"
@@ -354,11 +363,11 @@ let PodSecurityPolicy/generate =
 
 let Generate =
         ( λ(c : Configuration/global.Type) →
-            { DaemonSet = DaemonSet/generate c
-            , ClusterRole = ClusterRole/generate c
-            , ClusterRoleBinding = ClusterRoleBinding/generate c
-            , ServiceAccount = ServiceAccount/generate c
-            , PodSecurityPolicy = PodSecurityPolicy/generate c
+            { DaemonSet.cadvisor = DaemonSet/generate c
+            , ClusterRole.cadvisor = ClusterRole/generate c
+            , ClusterRoleBinding.cadvisor = ClusterRoleBinding/generate c
+            , ServiceAccount.cadvisor = ServiceAccount/generate c
+            , PodSecurityPolicy.cadvisor = PodSecurityPolicy/generate c
             }
         )
       : ∀(c : Configuration/global.Type) → Component

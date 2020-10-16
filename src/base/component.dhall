@@ -39,22 +39,22 @@ let IngressNginx/Component = ./ingress-nginx/component.dhall
 let component =
       { Frontend : Frontend/Component
       , Cadvisor : Cadvisor/Component
-      , GitHubProxy : GithubProxy/Component
+      , Github-Proxy : GithubProxy/Component
       , Gitserver : Gitserver/Component
       , Grafana : Grafana/Component
-      , IndexedSearch : IndexedSearch/Component
+      , Indexed-Search : IndexedSearch/Component
       , Jaeger : Jaeger/Component
-      , Postgres : Postgres/Component
-      , PreciseCodeIntel : PreciseCodeIntel/Component
+      , Pgsql : Postgres/Component
+      , Precise-Code-Intel : PreciseCodeIntel/Component
       , Prometheus : Prometheus/Component
-      , QueryRunner : QueryRunner/Component
+      , Query-Runner : QueryRunner/Component
       , Redis : Redis/Component
-      , RepoUpdater : RepoUpdater/Component
+      , Repo-Updater : RepoUpdater/Component
       , Replacer : Replacer/Component
       , Searcher : Searcher/Component
       , Symbols : Symbols/Component
-      , SyntaxHighlighter : SyntaxHighlighter/Component
-      , StorageClass : StorageClass/Component
+      , Syntect-Server : SyntaxHighlighter/Component
+      , Base : StorageClass/Component
       , IngressNginx : IngressNginx/Component
       }
 

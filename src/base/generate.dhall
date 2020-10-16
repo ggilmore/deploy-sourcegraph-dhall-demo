@@ -44,22 +44,22 @@ let Generate =
         ( λ(c : Configuration/global.Type) →
             { Frontend = Frontend/Generate c
             , Cadvisor = Cadvisor/Generate c
-            , GitHubProxy = GithubProxy/Generate c
+            , Github-Proxy = GithubProxy/Generate c
             , Gitserver = Gitserver/Generate c
             , Grafana = Grafana/Generate c
-            , IndexedSearch = IndexedSearch/Generate c
+            , Indexed-Search = IndexedSearch/Generate c
             , Jaeger = Jaeger/Generate c
-            , Postgres = Postgres/Generate c
-            , PreciseCodeIntel = PreciseCodeIntel/Generate c
+            , Pgsql = Postgres/Generate c
+            , Precise-Code-Intel = PreciseCodeIntel/Generate c
             , Prometheus = Prometheus/Generate c
-            , QueryRunner = QueryRunner/Generate c
+            , Query-Runner = QueryRunner/Generate c
             , Redis = Redis/Generate c
             , Replacer = Replacer/Generate c
-            , RepoUpdater = RepoUpdater/Generate c
+            , Repo-Updater = RepoUpdater/Generate c
             , Searcher = Searcher/Generate c
             , Symbols = Symbols/Generate c
-            , SyntaxHighlighter = SyntaxHighlighter/Generate c
-            , StorageClass = StorageClass/Generate c
+            , Syntect-Server = SyntaxHighlighter/Generate c
+            , Base = StorageClass/Generate c
             , IngressNginx = IngressNginx/Generate c
             }
         )
