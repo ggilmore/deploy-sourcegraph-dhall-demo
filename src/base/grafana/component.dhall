@@ -10,10 +10,10 @@ let Kubernetes/ServiceAccount =
       ../../deps/k8s/schemas/io.k8s.api.core.v1.ServiceAccount.dhall
 
 let component =
-      { StatefulSet : Kubernetes/StatefulSet.Type
-      , Service : Kubernetes/Service.Type
-      , ConfigMap : Kubernetes/ConfigMap.Type
-      , ServiceAccount : Kubernetes/ServiceAccount.Type
+      { StatefulSet : { grafana : Kubernetes/StatefulSet.Type }
+      , Service : { grafana : Kubernetes/Service.Type }
+      , ConfigMap : { grafana : Kubernetes/ConfigMap.Type }
+      , ServiceAccount : { grafana : Kubernetes/ServiceAccount.Type }
       }
 
 in  component

@@ -65,6 +65,10 @@ let containerResources = ../../configuration/container-resources.dhall
 
 let containerResources/tok8s = ../../util/container-resources-to-k8s.dhall
 
+let Util/component-label = ../../util/component-label.dhall
+
+let componentLabel = Util/component-label "indexed-search"
+
 let IndexerService/generate =
       λ(c : Configuration/global.Type) →
         let service =
@@ -82,6 +86,7 @@ let IndexerService/generate =
                   ]
                 , labels = Some
                   [ { mapKey = "app", mapValue = "indexed-search-indexer" }
+                  , componentLabel
                   , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "no-cluster-admin"
@@ -123,6 +128,7 @@ let Service/generate =
                   ]
                 , labels = Some
                   [ { mapKey = "app", mapValue = "indexed-search" }
+                  , componentLabel
                   , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "no-cluster-admin"
@@ -150,7 +156,7 @@ let zoektWebServerContainer/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/indexed-searcher:3.17.2@sha256:8324943e1b52466dc2052cf82bfd22b18ad045346d2b0ea403b4674f48214602"
+                "index.docker.io/sourcegraph/indexed-searcher:insiders@sha256:fcf03182a79aaf48252f74e47204088a2db4f11620c97dfbca0721f61521fe3c"
                 overrides.image
 
         let resources =
@@ -183,13 +189,14 @@ let zoektWebServerContainer/generate =
                   }
                 ]
               , readinessProbe = Some Kubernetes/Probe::{
-                , failureThreshold = Some 1
+                , failureThreshold = Some 3
                 , httpGet = Some Kubernetes/HTTPGetAction::{
                   , path = Some "/healthz"
                   , port = < Int : Natural | String : Text >.String "http"
                   , scheme = Some "HTTP"
                   }
-                , periodSeconds = Some 1
+                , timeoutSeconds = Some 5
+                , periodSeconds = Some 5
                 }
               , resources = Some resources
               , terminationMessagePolicy = Some "FallbackToLogsOnError"
@@ -209,7 +216,7 @@ let zoektIndexServerContainer/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/search-indexer:3.17.2@sha256:f31ec682b907bde2975acda88ee99ac268ef32a79309a6036ef5f26e8af0dcac"
+                "index.docker.io/sourcegraph/search-indexer:insiders@sha256:315e2f1994d80cf0cdbc3c9d46a568f406b3a08ce4f6dd372a4225bcfebc4f2f"
                 overrides.image
 
         let resources =
@@ -272,7 +279,8 @@ let StatefulSet/generate =
                     }
                   ]
                 , labels = Some
-                  [ { mapKey = "deploy", mapValue = "sourcegraph" }
+                  [ componentLabel
+                  , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "no-cluster-admin"
                     }
@@ -308,6 +316,7 @@ let StatefulSet/generate =
                   }
                 , volumeClaimTemplates = Some
                   [ Kubernetes/PersistentVolumeClaim::{
+                    , apiVersion = "apps/v1"
                     , metadata = Kubernetes/ObjectMeta::{
                       , labels = Some
                         [ { mapKey = "deploy", mapValue = "sourcegraph" } ]
@@ -330,9 +339,11 @@ let StatefulSet/generate =
 
 let Generate =
         ( λ(c : Configuration/global.Type) →
-            { StatefulSet = StatefulSet/generate c
-            , Service = Service/generate c
-            , IndexerService = IndexerService/generate c
+            { StatefulSet.indexed-search = StatefulSet/generate c
+            , Service =
+              { indexed-search = Service/generate c
+              , indexed-search-indexer = IndexerService/generate c
+              }
             }
         )
       : ∀(c : Configuration/global.Type) → component

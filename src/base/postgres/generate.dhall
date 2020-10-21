@@ -82,6 +82,10 @@ let containerResources/tok8s = ../../util/container-resources-to-k8s.dhall
 
 let Octal = ../../util/octal.dhall
 
+let Util/component-label = ../../util/component-label.dhall
+
+let componentLabel = Util/component-label "pgsql"
+
 let ConfigMap/generate =
       λ(c : Configuration/global.Type) →
         let overrides = c.Postgres.ConfigMap
@@ -114,7 +118,8 @@ let ConfigMap/generate =
                       # additionalAnnotations
                     )
                 , labels = Some
-                    (   Util/DeploySourcegraphLabel
+                    (   [ componentLabel ]
+                      # Util/DeploySourcegraphLabel
                       # [ { mapKey = "sourcegraph-resource-requires"
                           , mapValue = "no-cluster-admin"
                           }
@@ -137,7 +142,7 @@ let postgresContainer/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/postgres-11.4:3.16.1@sha256:63090799b34b3115a387d96fe2227a37999d432b774a1d9b7966b8c5d81b56ad"
+                "index.docker.io/sourcegraph/postgres-11.4:insiders@sha256:63090799b34b3115a387d96fe2227a37999d432b774a1d9b7966b8c5d81b56ad"
                 overrides.image
 
         let resources =
@@ -252,7 +257,7 @@ let initContainer/generate =
         let image =
               Optional/default
                 Text
-                "sourcegraph/alpine:3.10@sha256:4d05cd5669726fc38823e92320659a6d1ef7879e62268adec5df658a0bacf65c"
+                "sourcegraph/alpine:3.12@sha256:133a0a767b836cf86a011101995641cf1b5cbefb3dd212d78d7be145adde636d"
                 overrides.image
 
         let container =
@@ -306,7 +311,8 @@ let Deployment/generate =
                       # additionalAnnotations
                     )
                 , labels = Some
-                    (   Util/DeploySourcegraphLabel
+                    (   [ componentLabel ]
+                      # Util/DeploySourcegraphLabel
                       # [ { mapKey = "sourcegraph-resource-requires"
                           , mapValue = "no-cluster-admin"
                           }
@@ -377,7 +383,8 @@ let PersistentVolumeClaim/generate =
                 overrides.additionalLabels
 
         let labels =
-                toMap
+                [ componentLabel ]
+              # toMap
                   { sourcegraph-resource-requires = "no-cluster-admin"
                   , deploy = "sourcegraph"
                   }
@@ -428,7 +435,9 @@ let Service/generate =
               # additionalAnnotations
 
         let labels =
-                toMap
+                toMap { app = "pgsql" }
+              # [ componentLabel ]
+              # toMap
                   { sourcegraph-resource-requires = "no-cluster-admin"
                   , deploy = "sourcegraph"
                   }
@@ -461,10 +470,10 @@ let Service/generate =
 
 let Generate =
         ( λ(c : Configuration/global.Type) →
-            { Deployment = Deployment/generate c
-            , Service = Service/generate c
-            , PersistentVolumeClaim = PersistentVolumeClaim/generate c
-            , ConfigMap = ConfigMap/generate c
+            { Deployment.pgsql = Deployment/generate c
+            , Service.pgsql = Service/generate c
+            , PersistentVolumeClaim.pgsql = PersistentVolumeClaim/generate c
+            , ConfigMap.pgsql-conf = ConfigMap/generate c
             }
         )
       : ∀(c : Configuration/global.Type) → component

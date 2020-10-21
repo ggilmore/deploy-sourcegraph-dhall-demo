@@ -4,8 +4,8 @@ let Kubernetes/Deployment =
 let Kubernetes/Service = ../../deps/k8s/schemas/io.k8s.api.core.v1.Service.dhall
 
 let component =
-      { Deployment : Kubernetes/Deployment.Type
-      , Service : Kubernetes/Service.Type
+      { Deployment : { query-runner : Kubernetes/Deployment.Type }
+      , Service : { query-runner : Kubernetes/Service.Type }
       }
 
 in  component

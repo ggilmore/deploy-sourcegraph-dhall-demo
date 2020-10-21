@@ -4,8 +4,8 @@ let Kubernetes/StatefulSet =
       ../../deps/k8s/schemas/io.k8s.api.apps.v1.StatefulSet.dhall
 
 let component =
-      { StatefulSet : Kubernetes/StatefulSet.Type
-      , Service : Kubernetes/Service.Type
+      { StatefulSet : { gitserver : Kubernetes/StatefulSet.Type }
+      , Service : { gitserver : Kubernetes/Service.Type }
       }
 
 in  component

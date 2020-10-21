@@ -10,10 +10,11 @@ let Kubernetes/PersistentVolumeClaim =
 let Kubernetes/Service = ../../deps/k8s/schemas/io.k8s.api.core.v1.Service.dhall
 
 let component =
-      { ConfigMap : Kubernetes/ConfigMap.Type
-      , Deployment : Kubernetes/Deployment.Type
-      , PersistentVolumeClaim : Kubernetes/PersistentVolumeClaim.Type
-      , Service : Kubernetes/Service.Type
+      { ConfigMap : { pgsql-conf : Kubernetes/ConfigMap.Type }
+      , Deployment : { pgsql : Kubernetes/Deployment.Type }
+      , PersistentVolumeClaim :
+          { pgsql : Kubernetes/PersistentVolumeClaim.Type }
+      , Service : { pgsql : Kubernetes/Service.Type }
       }
 
 in  component

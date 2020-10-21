@@ -15,13 +15,16 @@ let Kubernetes/ServiceAccount =
       ../../deps/k8s/schemas/io.k8s.api.core.v1.ServiceAccount.dhall
 
 let component =
-      { Deployment : Kubernetes/Deployment.Type
-      , Ingress : Kubernetes/Ingress.Type
-      , Role : Kubernetes/Role.Type
-      , RoleBinding : Kubernetes/RoleBinding.Type
-      , Service : Kubernetes/Service.Type
-      , ServiceAccount : Kubernetes/ServiceAccount.Type
-      , ServiceInternal : Kubernetes/Service.Type
+      { Deployment : { sourcegraph-frontend : Kubernetes/Deployment.Type }
+      , Ingress : { sourcegraph-frontend : Kubernetes/Ingress.Type }
+      , Role : { sourcegraph-frontend : Kubernetes/Role.Type }
+      , RoleBinding : { sourcegraph-frontend : Kubernetes/RoleBinding.Type }
+      , Service :
+          { sourcegraph-frontend : Kubernetes/Service.Type
+          , sourcegraph-frontend-internal : Kubernetes/Service.Type
+          }
+      , ServiceAccount :
+          { sourcegraph-frontend : Kubernetes/ServiceAccount.Type }
       }
 
 in  component

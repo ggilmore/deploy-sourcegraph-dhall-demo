@@ -50,8 +50,6 @@ let Kubernetes/ServiceSpec =
 let Kubernetes/StatefulSet =
       ../../deps/k8s/schemas/io.k8s.api.apps.v1.StatefulSet.dhall
 
-let Kubernetes/EnvVar = ../../deps/k8s/schemas/io.k8s.api.core.v1.EnvVar.dhall
-
 let Kubernetes/StatefulSetSpec =
       ../../deps/k8s/schemas/io.k8s.api.apps.v1.StatefulSetSpec.dhall
 
@@ -76,6 +74,10 @@ let containerResources/tok8s = ../../util/container-resources-to-k8s.dhall
 
 let Octal = ../../util/octal.dhall
 
+let Util/component-label = ../../util/component-label.dhall
+
+let componentLabel = Util/component-label "grafana"
+
 let ServiceAccount/generate =
       λ(c : Configuration/global.Type) →
         let serviceAccount =
@@ -87,7 +89,8 @@ let ServiceAccount/generate =
                 ]
               , metadata = Kubernetes/ObjectMeta::{
                 , labels = Some
-                  [ { mapKey = "category", mapValue = "rbac" }
+                  [ componentLabel
+                  , { mapKey = "category", mapValue = "rbac" }
                   , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "no-cluster-admin"
@@ -107,7 +110,8 @@ let ConfigMap/generate =
                   (toMap { `datasources.yml` = ./datasources.yaml as Text })
               , metadata = Kubernetes/ObjectMeta::{
                 , labels = Some
-                  [ { mapKey = "deploy", mapValue = "sourcegraph" }
+                  [ componentLabel
+                  , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "no-cluster-admin"
                     }
@@ -125,6 +129,7 @@ let Service/generate =
               , metadata = Kubernetes/ObjectMeta::{
                 , labels = Some
                   [ { mapKey = "app", mapValue = "grafana" }
+                  , componentLabel
                   , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "no-cluster-admin"
@@ -155,7 +160,7 @@ let StatefulSet/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/grafana:3.17.2@sha256:f390384e2f57f3aba4eae41e51340a541a5b7a82ee16bdcea3cd9520423f193a"
+                "index.docker.io/sourcegraph/grafana:insiders@sha256:6cde769ff3d80fdd34666d6cc785445cb4779369d4037590fda7c4eed4ddcca5"
                 overrides.image
 
         let resources =
@@ -177,10 +182,7 @@ let StatefulSet/generate =
                 }
 
         let additionalEnvironmentVariables =
-              Optional/default
-                (List Kubernetes/EnvVar.Type)
-                ([] : List Kubernetes/EnvVar.Type)
-                overrides.additionalEnvironmentVariables
+              overrides.additionalEnvironmentVariables
 
         let statefulSet =
               Kubernetes/StatefulSet::{
@@ -191,7 +193,8 @@ let StatefulSet/generate =
                     }
                   ]
                 , labels = Some
-                  [ { mapKey = "deploy", mapValue = "sourcegraph" }
+                  [ componentLabel
+                  , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "no-cluster-admin"
                     }
@@ -216,7 +219,7 @@ let StatefulSet/generate =
                   , spec = Some Kubernetes/PodSpec::{
                     , containers =
                       [ Kubernetes/Container::{
-                        , env = Some additionalEnvironmentVariables
+                        , env = additionalEnvironmentVariables
                         , image = Some image
                         , name = "grafana"
                         , ports = Some
@@ -262,6 +265,7 @@ let StatefulSet/generate =
                   }
                 , volumeClaimTemplates = Some
                   [ Kubernetes/PersistentVolumeClaim::{
+                    , apiVersion = "apps/v1"
                     , metadata = Kubernetes/ObjectMeta::{
                       , name = Some "grafana-data"
                       }
@@ -282,10 +286,10 @@ let StatefulSet/generate =
 
 let Generate =
         ( λ(c : Configuration/global.Type) →
-            { StatefulSet = StatefulSet/generate c
-            , Service = Service/generate c
-            , ServiceAccount = ServiceAccount/generate c
-            , ConfigMap = ConfigMap/generate c
+            { StatefulSet.grafana = StatefulSet/generate c
+            , Service.grafana = Service/generate c
+            , ServiceAccount.grafana = ServiceAccount/generate c
+            , ConfigMap.grafana = ConfigMap/generate c
             }
         )
       : ∀(c : Configuration/global.Type) → component

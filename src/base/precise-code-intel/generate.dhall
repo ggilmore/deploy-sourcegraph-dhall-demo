@@ -81,6 +81,10 @@ let component = ./component.dhall
 
 let Util/KeyValuePair = ../../util/key-value-pair.dhall
 
+let Util/component-label = ../../util/component-label.dhall
+
+let componentLabel = Util/component-label "precise-code-intel"
+
 let BundleManager/PersistentVolumeClaim/generate =
       λ(c : Configuration/global.Type) →
         let overrides = c.PreciseCodeIntel.BundleManager.PersistentVolumeClaim
@@ -95,7 +99,8 @@ let BundleManager/PersistentVolumeClaim/generate =
               Kubernetes/PersistentVolumeClaim::{
               , metadata = Kubernetes/ObjectMeta::{
                 , labels = Some
-                    (   [ { mapKey = "deploy", mapValue = "sourcegraph" }
+                    (   [ componentLabel
+                        , { mapKey = "deploy", mapValue = "sourcegraph" }
                         , { mapKey = "sourcegraph-resource-requires"
                           , mapValue = "no-cluster-admin"
                           }
@@ -148,6 +153,7 @@ let BundleManager/Service/generate =
                     (   [ { mapKey = "app"
                           , mapValue = "precise-code-intel-bundle-manager"
                           }
+                        , componentLabel
                         , { mapKey = "deploy", mapValue = "sourcegraph" }
                         , { mapKey = "sourcegraph-resource-requires"
                           , mapValue = "no-cluster-admin"
@@ -192,7 +198,7 @@ let BundleManager/Deployment/Containers/BundleManager/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/precise-code-intel-bundle-manager:3.17.2@sha256:7dff0e7e8c7a3451ce12cf5eb5e4073bb9502752926acf33f13eb370dc570cc8"
+                "index.docker.io/sourcegraph/precise-code-intel-bundle-manager:insiders@sha256:defc89dbf8713541c08321acbab5d145099a300703949d938b491be68617d351"
                 overrides.image
 
         let additionalEnvironmentVariables =
@@ -309,7 +315,8 @@ let BundleManager/Deployment/generate =
                       # additionalAnnotations
                     )
                 , labels = Some
-                    (   [ { mapKey = "deploy", mapValue = "sourcegraph" }
+                    (   [ componentLabel
+                        , { mapKey = "deploy", mapValue = "sourcegraph" }
                         , { mapKey = "sourcegraph-resource-requires"
                           , mapValue = "no-cluster-admin"
                           }
@@ -393,6 +400,7 @@ let Worker/Service/generate =
                     (   [ { mapKey = "app"
                           , mapValue = "precise-code-intel-worker"
                           }
+                        , componentLabel
                         , { mapKey = "deploy", mapValue = "sourcegraph" }
                         , { mapKey = "sourcegraph-resource-requires"
                           , mapValue = "no-cluster-admin"
@@ -433,7 +441,7 @@ let Worker/Deployment/Containers/Worker/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/precise-code-intel-worker:3.17.2@sha256:123ddcab97c273599b569a76bcd2c7dd7c423c1de816fda1c35b781e004b4dde"
+                "index.docker.io/sourcegraph/precise-code-intel-worker:insiders@sha256:7ad054d00a04777c11d42fa27d805b5f421b77b93ed6c112bdd89ad54c8da77d"
                 overrides.image
 
         let additionalEnvironmentVariables =
@@ -548,7 +556,8 @@ let Worker/Deployment/generate =
                       # additionalAnnotations
                     )
                 , labels = Some
-                    (   [ { mapKey = "deploy", mapValue = "sourcegraph" }
+                    (   [ componentLabel
+                        , { mapKey = "deploy", mapValue = "sourcegraph" }
                         , { mapKey = "sourcegraph-resource-requires"
                           , mapValue = "no-cluster-admin"
                           }
@@ -598,16 +607,18 @@ let Worker/Deployment/generate =
 
 let Generate =
         ( λ(c : Configuration/global.Type) →
-            { BundleManager =
-              { Deployment = BundleManager/Deployment/generate c
-              , PersistentVolumeClaim =
-                  BundleManager/PersistentVolumeClaim/generate c
-              , Service = BundleManager/Service/generate c
+            { Deployment =
+              { precise-code-intel-bundle-manager =
+                  BundleManager/Deployment/generate c
+              , precise-code-intel-worker = Worker/Deployment/generate c
               }
-            , Worker =
-              { Deployment = Worker/Deployment/generate c
-              , Service = Worker/Service/generate c
+            , Service =
+              { precise-code-intel-bundle-manager =
+                  BundleManager/Service/generate c
+              , precise-code-intel-worker = Worker/Service/generate c
               }
+            , PersistentVolumeClaim.bundle-manager =
+                BundleManager/PersistentVolumeClaim/generate c
             }
         )
       : ∀(c : Configuration/global.Type) → component

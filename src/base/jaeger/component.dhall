@@ -4,9 +4,11 @@ let Kubernetes/Deployment =
 let Kubernetes/Service = ../../deps/k8s/schemas/io.k8s.api.core.v1.Service.dhall
 
 let component =
-      { Deployment : Kubernetes/Deployment.Type
-      , Collector : Kubernetes/Service.Type
-      , Query : Kubernetes/Service.Type
+      { Deployment : { jaeger : Kubernetes/Deployment.Type }
+      , Service :
+          { jaeger-collector : Kubernetes/Service.Type
+          , jaeger-query : Kubernetes/Service.Type
+          }
       }
 
 in  component

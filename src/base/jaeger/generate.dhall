@@ -56,7 +56,7 @@ let Service/Query/generate =
                 , labels = Some
                   [ { mapKey = "app", mapValue = "jaeger" }
                   , { mapKey = "app.kubernetes.io/component"
-                    , mapValue = "query"
+                    , mapValue = "jaeger"
                     }
                   , { mapKey = "app.kubernetes.io/name", mapValue = "jaeger" }
                   , { mapKey = "deploy", mapValue = "sourcegraph" }
@@ -96,7 +96,7 @@ let Service/Collector/generate =
                 , labels = Some
                   [ { mapKey = "app", mapValue = "jaeger" }
                   , { mapKey = "app.kubernetes.io/component"
-                    , mapValue = "collector"
+                    , mapValue = "jaeger"
                     }
                   , { mapKey = "app.kubernetes.io/name", mapValue = "jaeger" }
                   , { mapKey = "deploy", mapValue = "sourcegraph" }
@@ -170,7 +170,7 @@ let Deployment/generate =
                 , labels = Some
                   [ { mapKey = "app", mapValue = "jaeger" }
                   , { mapKey = "app.kubernetes.io/component"
-                    , mapValue = "all-in-one"
+                    , mapValue = "jaeger"
                     }
                   , { mapKey = "app.kubernetes.io/name", mapValue = "jaeger" }
                   , { mapKey = "deploy", mapValue = "sourcegraph" }
@@ -216,7 +216,7 @@ let Deployment/generate =
                       [ Kubernetes/Container::{
                         , args = Some [ "--memory.max-traces=20000" ]
                         , image = Some
-                            "index.docker.io/sourcegraph/jaeger-all-in-one:3.17.2@sha256:3d885a0dd4dd7b3abd5aebe4baa2a854230178dacf00de5664b57c895f2015fa"
+                            "index.docker.io/sourcegraph/jaeger-all-in-one:insiders@sha256:b723668550f539dc211cd6e1943edb0a0871af4f58e55e9b0ec7523109322e3d"
                         , name = "jaeger"
                         , ports = Some
                           [ Kubernetes/ContainerPort::{
@@ -266,9 +266,11 @@ let Deployment/generate =
 
 let Generate =
         ( λ(c : Configuration/global.Type) →
-            { Deployment = Deployment/generate c
-            , Collector = Service/Collector/generate c
-            , Query = Service/Query/generate c
+            { Deployment.jaeger = Deployment/generate c
+            , Service =
+              { jaeger-collector = Service/Collector/generate c
+              , jaeger-query = Service/Query/generate c
+              }
             }
         )
       : ∀(c : Configuration/global.Type) → component

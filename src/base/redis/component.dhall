@@ -7,15 +7,17 @@ let Kubernetes/PersistentVolumeClaim =
       ../../deps/k8s/schemas/io.k8s.api.core.v1.PersistentVolumeClaim.dhall
 
 let component =
-      { Cache :
-          { Deployment : Kubernetes/Deployment.Type
-          , Service : Kubernetes/Service.Type
-          , PersistentVolumeClaim : Kubernetes/PersistentVolumeClaim.Type
+      { Deployment :
+          { redis-cache : Kubernetes/Deployment.Type
+          , redis-store : Kubernetes/Deployment.Type
           }
-      , Store :
-          { Deployment : Kubernetes/Deployment.Type
-          , PersistentVolumeClaim : Kubernetes/PersistentVolumeClaim.Type
-          , Service : Kubernetes/Service.Type
+      , Service :
+          { redis-cache : Kubernetes/Service.Type
+          , redis-store : Kubernetes/Service.Type
+          }
+      , PersistentVolumeClaim :
+          { redis-cache : Kubernetes/PersistentVolumeClaim.Type
+          , redis-store : Kubernetes/PersistentVolumeClaim.Type
           }
       }
 

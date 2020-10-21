@@ -95,6 +95,10 @@ let containerResources/tok8s = ../../util/container-resources-to-k8s.dhall
 
 let Octal = ../../util/octal.dhall
 
+let Util/component-label = ../../util/component-label.dhall
+
+let componentLabel = Util/component-label "prometheus"
+
 let Deployment/generate =
       λ(c : Configuration/global.Type) →
         let overrides = c.Prometheus.Deployment.Containers.Prometheus
@@ -102,7 +106,7 @@ let Deployment/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/prometheus:3.17.2@sha256:a725419a532fb17f6955e80f8a2f35efe15287c0a556e4fe7168d5fc6ff730d8"
+                "index.docker.io/sourcegraph/prometheus:insiders@sha256:be2484ab1f5b08d6329ad7489d9fbefc8949141de17cec66dfd6bda5a4efd718"
                 overrides.image
 
         let resources =
@@ -111,14 +115,14 @@ let Deployment/generate =
                     containerResources.overlay
                       containerResources.Configuration::{
                       , cpu = Some "2"
-                      , memory = Some "3G"
+                      , memory = Some "6G"
                       }
                       overrides.resources.limits
                 , requests =
                     containerResources.overlay
                       containerResources.Configuration::{
                       , cpu = Some "500m"
-                      , memory = Some "3G"
+                      , memory = Some "6G"
                       }
                       overrides.resources.requests
                 }
@@ -133,7 +137,8 @@ let Deployment/generate =
                     }
                   ]
                 , labels = Some
-                  [ { mapKey = "deploy", mapValue = "sourcegraph" }
+                  [ componentLabel
+                  , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "no-cluster-admin"
                     }
@@ -234,6 +239,7 @@ let Service/generate =
               , metadata = Kubernetes/ObjectMeta::{
                 , labels = Some
                   [ { mapKey = "app", mapValue = "prometheus" }
+                  , componentLabel
                   , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "no-cluster-admin"
@@ -269,7 +275,8 @@ let ServiceAccount/generate =
                 ]
               , metadata = Kubernetes/ObjectMeta::{
                 , labels = Some
-                  [ { mapKey = "category", mapValue = "rbac" }
+                  [ componentLabel
+                  , { mapKey = "category", mapValue = "rbac" }
                   , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "no-cluster-admin"
@@ -287,7 +294,8 @@ let PersistentVolumeClaim/generate =
               Kubernetes/PersistentVolumeClaim::{
               , metadata = Kubernetes/ObjectMeta::{
                 , labels = Some
-                  [ { mapKey = "deploy", mapValue = "sourcegraph" }
+                  [ componentLabel
+                  , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "no-cluster-admin"
                     }
@@ -312,7 +320,8 @@ let ClusterRole/generate =
               Kubernetes/ClusterRole::{
               , metadata = Kubernetes/ObjectMeta::{
                 , labels = Some
-                  [ { mapKey = "category", mapValue = "rbac" }
+                  [ componentLabel
+                  , { mapKey = "category", mapValue = "rbac" }
                   , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "cluster-admin"
@@ -354,7 +363,8 @@ let ClusterRoleBinding/generate =
               Kubernetes/ClusterRoleBinding::{
               , metadata = Kubernetes/ObjectMeta::{
                 , labels = Some
-                  [ { mapKey = "category", mapValue = "rbac" }
+                  [ componentLabel
+                  , { mapKey = "category", mapValue = "rbac" }
                   , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "cluster-admin"
@@ -363,7 +373,7 @@ let ClusterRoleBinding/generate =
                 , name = Some "prometheus"
                 }
               , roleRef = Kubernetes/RoleRef::{
-                , apiGroup = ""
+                , apiGroup = "rbac.authorization.k8s.io"
                 , kind = "ClusterRole"
                 , name = "prometheus"
                 }
@@ -383,23 +393,15 @@ let ConfigMap/generate =
         let configMap =
               Kubernetes/ConfigMap::{
               , data = Some
-                [ { mapKey = "alert_rules.yml"
-                  , mapValue = ./alert_rules.yml as Text
-                  }
-                , { mapKey = "extra_rules.yml", mapValue = "" }
-                , { mapKey = "node_rules.yml"
-                  , mapValue = ./node_rules.yml as Text
-                  }
+                [ { mapKey = "extra_rules.yml", mapValue = "" }
                 , { mapKey = "prometheus.yml"
                   , mapValue = ./prometheus.yml as Text
-                  }
-                , { mapKey = "sourcegraph_rules.yml"
-                  , mapValue = ./sourcegraph_rules.yml as Text
                   }
                 ]
               , metadata = Kubernetes/ObjectMeta::{
                 , labels = Some
-                  [ { mapKey = "deploy", mapValue = "sourcegraph" }
+                  [ componentLabel
+                  , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "no-cluster-admin"
                     }
@@ -412,13 +414,14 @@ let ConfigMap/generate =
 
 let Generate =
         ( λ(c : Configuration/global.Type) →
-            { Deployment = Deployment/generate c
-            , ClusterRole = ClusterRole/generate c
-            , ConfigMap = ConfigMap/generate c
-            , PersistentVolumeClaim = PersistentVolumeClaim/generate c
-            , ClusterRoleBinding = ClusterRoleBinding/generate c
-            , ServiceAccount = ServiceAccount/generate c
-            , Service = Service/generate c
+            { Deployment.prometheus = Deployment/generate c
+            , ClusterRole.prometheus = ClusterRole/generate c
+            , ConfigMap.prometheus = ConfigMap/generate c
+            , PersistentVolumeClaim.prometheus =
+                PersistentVolumeClaim/generate c
+            , ClusterRoleBinding.prometheus = ClusterRoleBinding/generate c
+            , ServiceAccount.prometheus = ServiceAccount/generate c
+            , Service.prometheus = Service/generate c
             }
         )
       : ∀(c : Configuration/global.Type) → component

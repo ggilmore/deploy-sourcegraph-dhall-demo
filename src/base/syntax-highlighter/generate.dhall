@@ -57,6 +57,10 @@ let containerResources = ../../configuration/container-resources.dhall
 
 let containerResources/tok8s = ../../util/container-resources-to-k8s.dhall
 
+let Util/component-label = ../../util/component-label.dhall
+
+let componentLabel = Util/component-label "syntect-server"
+
 let Service/generate =
       λ(c : Configuration/global.Type) →
         let service =
@@ -64,6 +68,7 @@ let Service/generate =
               , metadata = Kubernetes/ObjectMeta::{
                 , labels = Some
                   [ { mapKey = "app", mapValue = "syntect-server" }
+                  , componentLabel
                   , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "no-cluster-admin"
@@ -96,7 +101,7 @@ let Deployment/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/syntax-highlighter:3.17.2@sha256:aa93514b7bc3aaf7a4e9c92e5ff52ee5052db6fb101255a69f054e5b8cdb46ff"
+                "index.docker.io/sourcegraph/syntax-highlighter:insiders@sha256:b9e1f7471ebe596415ca2c7ab8e1282d7c4ba4e4e71390d80e9924a73139d793"
                 overrides.image
 
         let resources =
@@ -126,7 +131,8 @@ let Deployment/generate =
                     }
                   ]
                 , labels = Some
-                  [ { mapKey = "deploy", mapValue = "sourcegraph" }
+                  [ componentLabel
+                  , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "no-cluster-admin"
                     }
@@ -200,7 +206,9 @@ let Deployment/generate =
 
 let Generate =
         ( λ(c : Configuration/global.Type) →
-            { Deployment = Deployment/generate c, Service = Service/generate c }
+            { Deployment.syntect-server = Deployment/generate c
+            , Service.syntect-server = Service/generate c
+            }
         )
       : ∀(c : Configuration/global.Type) → component
 

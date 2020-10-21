@@ -68,13 +68,18 @@ let containerResources = ../../configuration/container-resources.dhall
 
 let containerResources/tok8s = ../../util/container-resources-to-k8s.dhall
 
+let Util/component-label = ../../util/component-label.dhall
+
+let componentLabel = Util/component-label "redis"
+
 let Cache/PersistentVolumeClaim/generate =
       λ(c : Configuration/global.Type) →
         let persistentVolumeClaim =
               Kubernetes/PersistentVolumeClaim::{
               , metadata = Kubernetes/ObjectMeta::{
                 , labels = Some
-                  [ { mapKey = "deploy", mapValue = "sourcegraph" }
+                  [ componentLabel
+                  , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "no-cluster-admin"
                     }
@@ -106,6 +111,7 @@ let Cache/Service/generate =
                   ]
                 , labels = Some
                   [ { mapKey = "app", mapValue = "redis-cache" }
+                  , componentLabel
                   , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "no-cluster-admin"
@@ -137,7 +143,7 @@ let cacheContainer/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/redis-cache:3.17.2@sha256:7820219195ab3e8fdae5875cd690fed1b2a01fd1063bd94210c0e9d529c38e56"
+                "index.docker.io/sourcegraph/redis-cache:insiders@sha256:7820219195ab3e8fdae5875cd690fed1b2a01fd1063bd94210c0e9d529c38e56"
                 overrides.image
 
         let resources =
@@ -251,7 +257,8 @@ let Cache/Deployment/generate =
                     }
                   ]
                 , labels = Some
-                  [ { mapKey = "deploy", mapValue = "sourcegraph" }
+                  [ componentLabel
+                  , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "no-cluster-admin"
                     }
@@ -302,7 +309,8 @@ let Store/PersistentVolumeClaim/generate =
               Kubernetes/PersistentVolumeClaim::{
               , metadata = Kubernetes/ObjectMeta::{
                 , labels = Some
-                  [ { mapKey = "deploy", mapValue = "sourcegraph" }
+                  [ componentLabel
+                  , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "no-cluster-admin"
                     }
@@ -334,6 +342,7 @@ let Store/Service/generate =
                   ]
                 , labels = Some
                   [ { mapKey = "app", mapValue = "redis-store" }
+                  , componentLabel
                   , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "no-cluster-admin"
@@ -365,7 +374,7 @@ let storeContainer/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/redis-store:3.17.2@sha256:e8467a8279832207559bdfbc4a89b68916ecd5b44ab5cf7620c995461c005168"
+                "index.docker.io/sourcegraph/redis-store:insiders@sha256:e8467a8279832207559bdfbc4a89b68916ecd5b44ab5cf7620c995461c005168"
                 overrides.image
 
         let resources =
@@ -480,7 +489,8 @@ let Store/Deployment/generate =
                     }
                   ]
                 , labels = Some
-                  [ { mapKey = "deploy", mapValue = "sourcegraph" }
+                  [ componentLabel
+                  , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "no-cluster-admin"
                     }
@@ -527,15 +537,17 @@ let Store/Deployment/generate =
 
 let Generate =
         ( λ(c : Configuration/global.Type) →
-            { Cache =
-              { Deployment = Cache/Deployment/generate c
-              , PersistentVolumeClaim = Cache/PersistentVolumeClaim/generate c
-              , Service = Cache/Service/generate c
+            { Deployment =
+              { redis-cache = Cache/Deployment/generate c
+              , redis-store = Store/Deployment/generate c
               }
-            , Store =
-              { Deployment = Store/Deployment/generate c
-              , PersistentVolumeClaim = Store/PersistentVolumeClaim/generate c
-              , Service = Store/Service/generate c
+            , PersistentVolumeClaim =
+              { redis-cache = Cache/PersistentVolumeClaim/generate c
+              , redis-store = Store/PersistentVolumeClaim/generate c
+              }
+            , Service =
+              { redis-cache = Cache/Service/generate c
+              , redis-store = Store/Service/generate c
               }
             }
         )

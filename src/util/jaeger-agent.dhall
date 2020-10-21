@@ -12,7 +12,7 @@ let Kubernetes/EnvVarSource =
 in  Kubernetes/Container::{
     , name = "jaeger-agent"
     , image = Some
-        "index.docker.io/sourcegraph/jaeger-agent:3.17.2@sha256:a29258e098c7d23392411abd359563afdd89529e9852ce1ba73f80188a72fd5c"
+        "index.docker.io/sourcegraph/jaeger-agent:insiders@sha256:f3faf496fe750ce75e6304f9ac10d8e1f42c9c9bdab3ab0c2fbf77a8d26084a4"
     , args = Some
       [ "--reporter.grpc.host-port=jaeger-collector:14250"
       , "--reporter.type=grpc"

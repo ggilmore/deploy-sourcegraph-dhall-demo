@@ -38,6 +38,11 @@ let Kubernetes/PodSecurityContext =
 
 let Kubernetes/PodSpec = ../../deps/k8s/schemas/io.k8s.api.core.v1.PodSpec.dhall
 
+let Kubernetes/Probe = ../../deps/k8s/schemas/io.k8s.api.core.v1.Probe.dhall
+
+let Kubernetes/HTTPGetAction =
+      ../../deps/k8s/schemas/io.k8s.api.core.v1.HTTPGetAction.dhall
+
 let Kubernetes/PodTemplateSpec =
       ../../deps/k8s/schemas/io.k8s.api.core.v1.PodTemplateSpec.dhall
 
@@ -60,6 +65,10 @@ let containerResources = ../../configuration/container-resources.dhall
 
 let containerResources/tok8s = ../../util/container-resources-to-k8s.dhall
 
+let Util/component-label = ../../util/component-label.dhall
+
+let componentLabel = Util/component-label "repo-updater"
+
 let Service/generate =
       λ(c : Configuration/global.Type) →
         let service =
@@ -73,6 +82,7 @@ let Service/generate =
                   ]
                 , labels = Some
                   [ { mapKey = "app", mapValue = "repo-updater" }
+                  , componentLabel
                   , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "no-cluster-admin"
@@ -104,7 +114,7 @@ let Deployment/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/repo-updater:3.17.2@sha256:1db6e1343e65a4bf8f6d0b524dcd722b1fbbe417227e6642b1de824de966ffc8"
+                "index.docker.io/sourcegraph/repo-updater:insiders@sha256:ed2460d032ab2b025f68cf127ddf39fb17dbb53c83f718c142de66d51ecd575d"
                 overrides.image
 
         let resources =
@@ -112,14 +122,14 @@ let Deployment/generate =
                 { limits =
                     containerResources.overlay
                       containerResources.Configuration::{
-                      , cpu = Some "100m"
-                      , memory = Some "500Mi"
+                      , cpu = Some "1"
+                      , memory = Some "2Gi"
                       }
                       overrides.resources.limits
                 , requests =
                     containerResources.overlay
                       containerResources.Configuration::{
-                      , cpu = Some "100m"
+                      , cpu = Some "1"
                       , memory = Some "500Mi"
                       }
                       overrides.resources.requests
@@ -135,7 +145,8 @@ let Deployment/generate =
                     }
                   ]
                 , labels = Some
-                  [ { mapKey = "deploy", mapValue = "sourcegraph" }
+                  [ componentLabel
+                  , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "no-cluster-admin"
                     }
@@ -181,6 +192,17 @@ let Deployment/generate =
                             }
                           ]
                         , resources = Some resources
+                        , readinessProbe = Some Kubernetes/Probe::{
+                          , failureThreshold = Some 3
+                          , httpGet = Some Kubernetes/HTTPGetAction::{
+                            , path = Some "/healthz"
+                            , port =
+                                < Int : Natural | String : Text >.String "http"
+                            , scheme = Some "HTTP"
+                            }
+                          , periodSeconds = Some 1
+                          , timeoutSeconds = Some 5
+                          }
                         , terminationMessagePolicy = Some
                             "FallbackToLogsOnError"
                         }
@@ -201,7 +223,7 @@ let Deployment/generate =
                             }
                           ]
                         , image = Some
-                            "index.docker.io/sourcegraph/jaeger-agent:3.17.2@sha256:a29258e098c7d23392411abd359563afdd89529e9852ce1ba73f80188a72fd5c"
+                            "index.docker.io/sourcegraph/jaeger-agent:insiders@sha256:f3faf496fe750ce75e6304f9ac10d8e1f42c9c9bdab3ab0c2fbf77a8d26084a4"
                         , name = "jaeger-agent"
                         , ports = Some
                           [ Kubernetes/ContainerPort::{
@@ -245,7 +267,9 @@ let Deployment/generate =
 
 let Generate =
         ( λ(c : Configuration/global.Type) →
-            { Deployment = Deployment/generate c, Service = Service/generate c }
+            { Deployment.repo-updater = Deployment/generate c
+            , Service.repo-updater = Service/generate c
+            }
         )
       : ∀(c : Configuration/global.Type) → component
 

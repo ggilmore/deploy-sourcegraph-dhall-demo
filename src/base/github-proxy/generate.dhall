@@ -60,6 +60,10 @@ let containerResources = ../../configuration/container-resources.dhall
 
 let containerResources/tok8s = ../../util/container-resources-to-k8s.dhall
 
+let Util/component-label = ../../util/component-label.dhall
+
+let componentLabel = Util/component-label "github-proxy"
+
 let Service/generate =
       λ(c : Configuration/global.Type) →
         let service =
@@ -73,6 +77,7 @@ let Service/generate =
                   ]
                 , labels = Some
                   [ { mapKey = "app", mapValue = "github-proxy" }
+                  , componentLabel
                   , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "no-cluster-admin"
@@ -104,7 +109,7 @@ let Deployment/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/github-proxy:3.17.2@sha256:b54c845d7aa967791ea5f166a19df8f3abeeda408ae7ed9e1251f07e2c83a4f6"
+                "index.docker.io/sourcegraph/github-proxy:insiders@sha256:a810d5dc7ab026af65ab2d971856bf288495abd8045556900fc5f92ce497e0e8"
                 overrides.image
 
         let resources =
@@ -134,7 +139,8 @@ let Deployment/generate =
                     }
                   ]
                 , labels = Some
-                  [ { mapKey = "deploy", mapValue = "sourcegraph" }
+                  [ componentLabel
+                  , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "no-cluster-admin"
                     }
@@ -196,7 +202,7 @@ let Deployment/generate =
                             }
                           ]
                         , image = Some
-                            "index.docker.io/sourcegraph/jaeger-agent:3.17.2@sha256:a29258e098c7d23392411abd359563afdd89529e9852ce1ba73f80188a72fd5c"
+                            "index.docker.io/sourcegraph/jaeger-agent:insiders@sha256:f3faf496fe750ce75e6304f9ac10d8e1f42c9c9bdab3ab0c2fbf77a8d26084a4"
                         , name = "jaeger-agent"
                         , ports = Some
                           [ Kubernetes/ContainerPort::{
@@ -240,7 +246,9 @@ let Deployment/generate =
 
 let Generate =
         ( λ(c : Configuration/global.Type) →
-            { Deployment = Deployment/generate c, Service = Service/generate c }
+            { Deployment.github-proxy = Deployment/generate c
+            , Service.github-proxy = Service/generate c
+            }
         )
       : ∀(c : Configuration/global.Type) → component
 

@@ -7,15 +7,16 @@ let Kubernetes/PersistentVolumeClaim =
       ../../deps/k8s/schemas/io.k8s.api.core.v1.PersistentVolumeClaim.dhall
 
 let component =
-      { BundleManager :
-          { Deployment : Kubernetes/Deployment.Type
-          , Service : Kubernetes/Service.Type
-          , PersistentVolumeClaim : Kubernetes/PersistentVolumeClaim.Type
+      { Deployment :
+          { precise-code-intel-bundle-manager : Kubernetes/Deployment.Type
+          , precise-code-intel-worker : Kubernetes/Deployment.Type
           }
-      , Worker :
-          { Deployment : Kubernetes/Deployment.Type
-          , Service : Kubernetes/Service.Type
+      , Service :
+          { precise-code-intel-bundle-manager : Kubernetes/Service.Type
+          , precise-code-intel-worker : Kubernetes/Service.Type
           }
+      , PersistentVolumeClaim :
+          { bundle-manager : Kubernetes/PersistentVolumeClaim.Type }
       }
 
 in  component

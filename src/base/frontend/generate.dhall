@@ -101,6 +101,10 @@ let Util/JaegerAgent = ../../util/jaeger-agent.dhall
 
 let Util/KeyValuePair = ../../util/key-value-pair.dhall
 
+let Util/component-label = ../../util/component-label.dhall
+
+let componentLabel = Util/component-label "frontend"
+
 let component = ./component.dhall
 
 let containerResources = ../../configuration/container-resources.dhall
@@ -165,6 +169,26 @@ let frontendContainer/generate =
                   }
                 , Kubernetes/EnvVar::{ name = "PGUSER", value = Some "sg" }
                 , Kubernetes/EnvVar::{
+                  , name = "CODEINTEL_PGDATABASE"
+                  , value = Some "sg"
+                  }
+                , Kubernetes/EnvVar::{
+                  , name = "CODEINTEL_PGHOST"
+                  , value = Some "codeintel-db"
+                  }
+                , Kubernetes/EnvVar::{
+                  , name = "CODEINTEL_PGPORT"
+                  , value = Some "5432"
+                  }
+                , Kubernetes/EnvVar::{
+                  , name = "CODEINTEL_PGSSLMODE"
+                  , value = Some "disable"
+                  }
+                , Kubernetes/EnvVar::{
+                  , name = "CODEINTEL_PGUSER"
+                  , value = Some "sg"
+                  }
+                , Kubernetes/EnvVar::{
                   , name = "SRC_GIT_SERVERS"
                   , value = Some (makeGitserverEnvVar gitserverReplicas)
                   }
@@ -201,7 +225,7 @@ let frontendContainer/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/frontend:3.17.2@sha256:2378899365619635ce7acd983582407688d4def72a3fd62ae6fa0c23a0554fde"
+                "index.docker.io/sourcegraph/frontend:insiders@sha256:834e9a0420c4490775bccb45a2e1e28b27dee9314eca56f8e605f84ff82b2cd9"
                 overrides.image
 
         let container =
@@ -282,7 +306,8 @@ let Deployment/generate =
                       # additionalAnnotations
                     )
                 , labels = Some
-                    (   [ { mapKey = "deploy", mapValue = "sourcegraph" }
+                    (   [ componentLabel
+                        , { mapKey = "deploy", mapValue = "sourcegraph" }
                         , { mapKey = "sourcegraph-resource-requires"
                           , mapValue = "no-cluster-admin"
                           }
@@ -360,6 +385,7 @@ let Ingress/generate =
                     )
                 , labels = Some
                     (   [ { mapKey = "app", mapValue = "sourcegraph-frontend" }
+                        , componentLabel
                         , { mapKey = "deploy", mapValue = "sourcegraph" }
                         , { mapKey = "sourcegraph-resource-requires"
                           , mapValue = "no-cluster-admin"
@@ -408,7 +434,8 @@ let Role/generate =
               , metadata = Kubernetes/ObjectMeta::{
                 , annotations = overrides.additionalAnnotations
                 , labels = Some
-                    (   [ { mapKey = "category", mapValue = "rbac" }
+                    (   [ componentLabel
+                        , { mapKey = "category", mapValue = "rbac" }
                         , { mapKey = "deploy", mapValue = "sourcegraph" }
                         , { mapKey = "sourcegraph-resource-requires"
                           , mapValue = "cluster-admin"
@@ -444,7 +471,8 @@ let RoleBinding/generate =
               Kubernetes/RoleBinding::{
               , metadata = Kubernetes/ObjectMeta::{
                 , labels = Some
-                    (   [ { mapKey = "category", mapValue = "rbac" }
+                    (   [ componentLabel
+                        , { mapKey = "category", mapValue = "rbac" }
                         , { mapKey = "deploy", mapValue = "sourcegraph" }
                         , { mapKey = "sourcegraph-resource-requires"
                           , mapValue = "cluster-admin"
@@ -456,7 +484,7 @@ let RoleBinding/generate =
                 , name = Some "sourcegraph-frontend"
                 }
               , roleRef = Kubernetes/RoleRef::{
-                , apiGroup = ""
+                , apiGroup = "rbac.authorization.k8s.io"
                 , kind = "Role"
                 , name = "sourcegraph-frontend"
                 }
@@ -499,6 +527,7 @@ let Service/generate =
                     )
                 , labels = Some
                     (   [ { mapKey = "app", mapValue = "sourcegraph-frontend" }
+                        , componentLabel
                         , { mapKey = "deploy", mapValue = "sourcegraph" }
                         , { mapKey = "sourcegraph-resource-requires"
                           , mapValue = "no-cluster-admin"
@@ -541,7 +570,8 @@ let ServiceAccount/generate =
               , metadata = Kubernetes/ObjectMeta::{
                 , annotations = overrides.additionalAnnotations
                 , labels = Some
-                    (   [ { mapKey = "category", mapValue = "rbac" }
+                    (   [ componentLabel
+                        , { mapKey = "category", mapValue = "rbac" }
                         , { mapKey = "deploy", mapValue = "sourcegraph" }
                         , { mapKey = "sourcegraph-resource-requires"
                           , mapValue = "no-cluster-admin"
@@ -572,6 +602,7 @@ let ServiceInternal/generate =
                 , annotations = overrides.additionalAnnotations
                 , labels = Some
                     (   [ { mapKey = "app", mapValue = "sourcegraph-frontend" }
+                        , componentLabel
                         , { mapKey = "deploy", mapValue = "sourcegraph" }
                         , { mapKey = "sourcegraph-resource-requires"
                           , mapValue = "no-cluster-admin"
@@ -601,13 +632,15 @@ let ServiceInternal/generate =
 
 let Generate =
         ( λ(c : Configuration/global.Type) →
-            { Deployment = Deployment/generate c
-            , Ingress = Ingress/generate c
-            , Role = Role/generate c
-            , RoleBinding = RoleBinding/generate c
-            , Service = Service/generate c
-            , ServiceAccount = ServiceAccount/generate c
-            , ServiceInternal = ServiceInternal/generate c
+            { Deployment.sourcegraph-frontend = Deployment/generate c
+            , Ingress.sourcegraph-frontend = Ingress/generate c
+            , Role.sourcegraph-frontend = Role/generate c
+            , RoleBinding.sourcegraph-frontend = RoleBinding/generate c
+            , Service =
+              { sourcegraph-frontend = Service/generate c
+              , sourcegraph-frontend-internal = ServiceInternal/generate c
+              }
+            , ServiceAccount.sourcegraph-frontend = ServiceAccount/generate c
             }
         )
       : ∀(c : Configuration/global.Type) → component

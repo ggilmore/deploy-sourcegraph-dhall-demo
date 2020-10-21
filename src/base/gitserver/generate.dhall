@@ -74,6 +74,10 @@ let containerResources/tok8s = ../../util/container-resources-to-k8s.dhall
 
 let Octal = ../../util/octal.dhall
 
+let Util/component-label = ../../util/component-label.dhall
+
+let componentLabel = Util/component-label "gitserver"
+
 let Service/generate =
       λ(c : Configuration/global.Type) →
         let overrides = c.Gitserver.Service
@@ -105,6 +109,7 @@ let Service/generate =
                 , labels = Some
                     (   toMap
                           { sourcegraph-resource-requires = "no-cluster-admin"
+                          , `app.kubernetes.io/component` = "gitserver"
                           , app = "gitserver"
                           , type = "gitserver"
                           , deploy = "sourcegraph"
@@ -142,7 +147,7 @@ let gitserverContainer/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/gitserver:3.17.2@sha256:a2dac3ed8c9bbd7f930ae8d2bb446878f43f326002774fd85647945a90535733"
+                "index.docker.io/sourcegraph/gitserver:insiders@sha256:a6fdd7d889a2e4a76f22cfa4fe8fd4775895b8213329ca5ef2c2bf0515cb1a51"
                 overrides.image
 
         let resources =
@@ -246,7 +251,8 @@ let StatefulSet/generate =
                       # additionalAnnotations
                     )
                 , labels = Some
-                    (   [ { mapKey = "deploy", mapValue = "sourcegraph" }
+                    (   [ componentLabel
+                        , { mapKey = "deploy", mapValue = "sourcegraph" }
                         , { mapKey = "sourcegraph-resource-requires"
                           , mapValue = "no-cluster-admin"
                           }
@@ -289,6 +295,7 @@ let StatefulSet/generate =
                   }
                 , volumeClaimTemplates = Some
                   [ Kubernetes/PersistentVolumeClaim::{
+                    , apiVersion = "apps/v1"
                     , metadata = Kubernetes/ObjectMeta::{ name = Some "repos" }
                     , spec = Some Kubernetes/PersistentVolumeClaimSpec::{
                       , accessModes = Some [ "ReadWriteOnce" ]
@@ -307,8 +314,8 @@ let StatefulSet/generate =
 
 let Generate =
         ( λ(c : Configuration/global.Type) →
-            { StatefulSet = StatefulSet/generate c
-            , Service = Service/generate c
+            { StatefulSet.gitserver = StatefulSet/generate c
+            , Service.gitserver = Service/generate c
             }
         )
       : ∀(c : Configuration/global.Type) → component
