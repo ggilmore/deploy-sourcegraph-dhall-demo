@@ -12,8 +12,8 @@ let ToList =
         ( λ(c : component) →
             Kubernetes/List::{
             , items =
-              [ Kubernetes/TypesUnion.Deployment c.Deployment
-              , Kubernetes/TypesUnion.Service c.Service
+              [ Kubernetes/TypesUnion.Deployment c.Deployment.github-proxy
+              , Kubernetes/TypesUnion.Service c.Service.github-proxy
               ]
             }
         )

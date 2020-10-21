@@ -22,8 +22,6 @@ let QueryRunner/Generate = ./query-runner/generate.dhall
 
 let Redis/Generate = ./redis/generate.dhall
 
-let Replacer/Generate = ./replacer/generate.dhall
-
 let RepoUpdater/Generate = ./repo-updater/generate.dhall
 
 let Searcher/Generate = ./searcher/generate.dhall
@@ -56,7 +54,6 @@ let Generate =
             , Prometheus = Prometheus/Generate c
             , Query-Runner = QueryRunner/Generate c
             , Redis = Redis/Generate c
-            , Replacer = Replacer/Generate c
             , Repo-Updater = RepoUpdater/Generate c
             , Searcher = Searcher/Generate c
             , Symbols = Symbols/Generate c

@@ -12,11 +12,13 @@ let ToList =
         ( λ(c : Component) →
             Kubernetes/List::{
             , items =
-              [ Kubernetes/TypesUnion.DaemonSet c.DaemonSet
-              , Kubernetes/TypesUnion.ClusterRole c.ClusterRole
-              , Kubernetes/TypesUnion.ClusterRoleBinding c.ClusterRoleBinding
-              , Kubernetes/TypesUnion.PodSecurityPolicy c.PodSecurityPolicy
-              , Kubernetes/TypesUnion.ServiceAccount c.ServiceAccount
+              [ Kubernetes/TypesUnion.DaemonSet c.DaemonSet.cadvisor
+              , Kubernetes/TypesUnion.ClusterRole c.ClusterRole.cadvisor
+              , Kubernetes/TypesUnion.ClusterRoleBinding
+                  c.ClusterRoleBinding.cadvisor
+              , Kubernetes/TypesUnion.PodSecurityPolicy
+                  c.PodSecurityPolicy.cadvisor
+              , Kubernetes/TypesUnion.ServiceAccount c.ServiceAccount.cadvisor
               ]
             }
         )

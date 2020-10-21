@@ -12,14 +12,14 @@ let ToList =
         ( λ(c : component) →
             Kubernetes/List::{
             , items =
-              [ Kubernetes/TypesUnion.Deployment c.Cache.Deployment
-              , Kubernetes/TypesUnion.Service c.Cache.Service
+              [ Kubernetes/TypesUnion.Deployment c.Deployment.redis-cache
+              , Kubernetes/TypesUnion.Service c.Service.redis-cache
               , Kubernetes/TypesUnion.PersistentVolumeClaim
-                  c.Cache.PersistentVolumeClaim
-              , Kubernetes/TypesUnion.Deployment c.Store.Deployment
-              , Kubernetes/TypesUnion.Service c.Store.Service
+                  c.PersistentVolumeClaim.redis-cache
+              , Kubernetes/TypesUnion.Deployment c.Deployment.redis-store
+              , Kubernetes/TypesUnion.Service c.Service.redis-store
               , Kubernetes/TypesUnion.PersistentVolumeClaim
-                  c.Store.PersistentVolumeClaim
+                  c.PersistentVolumeClaim.redis-store
               ]
             }
         )

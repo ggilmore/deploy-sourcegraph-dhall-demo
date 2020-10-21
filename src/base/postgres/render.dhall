@@ -12,11 +12,11 @@ let ToList =
         ( λ(c : component) →
             Kubernetes/List::{
             , items =
-              [ Kubernetes/TypesUnion.Deployment c.Deployment
-              , Kubernetes/TypesUnion.Service c.Service
+              [ Kubernetes/TypesUnion.Deployment c.Deployment.pgsql
+              , Kubernetes/TypesUnion.Service c.Service.pgsql
               , Kubernetes/TypesUnion.PersistentVolumeClaim
-                  c.PersistentVolumeClaim
-              , Kubernetes/TypesUnion.ConfigMap c.ConfigMap
+                  c.PersistentVolumeClaim.pgsql
+              , Kubernetes/TypesUnion.ConfigMap c.ConfigMap.pgsql-conf
               ]
             }
         )

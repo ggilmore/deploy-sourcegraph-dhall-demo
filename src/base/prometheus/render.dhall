@@ -12,14 +12,15 @@ let ToList =
         ( λ(c : component) →
             Kubernetes/List::{
             , items =
-              [ Kubernetes/TypesUnion.Deployment c.Deployment
-              , Kubernetes/TypesUnion.ClusterRole c.ClusterRole
-              , Kubernetes/TypesUnion.ConfigMap c.ConfigMap
+              [ Kubernetes/TypesUnion.Deployment c.Deployment.prometheus
+              , Kubernetes/TypesUnion.ClusterRole c.ClusterRole.prometheus
+              , Kubernetes/TypesUnion.ConfigMap c.ConfigMap.prometheus
               , Kubernetes/TypesUnion.PersistentVolumeClaim
-                  c.PersistentVolumeClaim
-              , Kubernetes/TypesUnion.ClusterRoleBinding c.ClusterRoleBinding
-              , Kubernetes/TypesUnion.ServiceAccount c.ServiceAccount
-              , Kubernetes/TypesUnion.Service c.Service
+                  c.PersistentVolumeClaim.prometheus
+              , Kubernetes/TypesUnion.ClusterRoleBinding
+                  c.ClusterRoleBinding.prometheus
+              , Kubernetes/TypesUnion.ServiceAccount c.ServiceAccount.prometheus
+              , Kubernetes/TypesUnion.Service c.Service.prometheus
               ]
             }
         )

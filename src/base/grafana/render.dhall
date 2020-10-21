@@ -12,10 +12,10 @@ let ToList =
         ( λ(c : component) →
             Kubernetes/List::{
             , items =
-              [ Kubernetes/TypesUnion.StatefulSet c.StatefulSet
-              , Kubernetes/TypesUnion.Service c.Service
-              , Kubernetes/TypesUnion.ServiceAccount c.ServiceAccount
-              , Kubernetes/TypesUnion.ConfigMap c.ConfigMap
+              [ Kubernetes/TypesUnion.StatefulSet c.StatefulSet.grafana
+              , Kubernetes/TypesUnion.Service c.Service.grafana
+              , Kubernetes/TypesUnion.ServiceAccount c.ServiceAccount.grafana
+              , Kubernetes/TypesUnion.ConfigMap c.ConfigMap.grafana
               ]
             }
         )

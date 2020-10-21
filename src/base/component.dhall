@@ -22,8 +22,6 @@ let QueryRunner/Component = ./query-runner/component.dhall
 
 let Redis/Component = ./redis/component.dhall
 
-let Replacer/Component = ./replacer/component.dhall
-
 let RepoUpdater/Component = ./repo-updater/component.dhall
 
 let Searcher/Component = ./searcher/component.dhall
@@ -52,7 +50,6 @@ let component =
       , Query-Runner : QueryRunner/Component
       , Redis : Redis/Component
       , Repo-Updater : RepoUpdater/Component
-      , Replacer : Replacer/Component
       , Searcher : Searcher/Component
       , Symbols : Symbols/Component
       , Syntect-Server : SyntaxHighlighter/Component

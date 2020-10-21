@@ -20,7 +20,7 @@ let QueryRunner/Render = ./query-runner/render.dhall
 
 let Redis/Render = ./redis/render.dhall
 
-let Replacer/Render = ./replacer/render.dhall
+let Code-intel-db/Render = ./code-intel-db/render.dhall
 
 let RepoUpdater/Render = ./repo-updater/render.dhall
 
@@ -59,11 +59,11 @@ let Render =
                   , Cadvisor/Render c
                   , PreciseCodeIntel/Render c
                   , Redis/Render c
-                  , Replacer/Render c
                   , QueryRunner/Render c
                   , Prometheus/Render c
                   , StorageClass/Render c
                   , IngressNginx/Render c
+                  , Code-intel-db/Render c
                   ]
 
             in  Kubernetes/List::{

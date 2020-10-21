@@ -12,8 +12,9 @@ let ToList =
         ( λ(c : component) →
             Kubernetes/List::{
             , items =
-              [ Kubernetes/TypesUnion.StatefulSet c.StatefulSet
-              , Kubernetes/TypesUnion.Service c.Service
+              [ Kubernetes/TypesUnion.StatefulSet c.StatefulSet.indexed-search
+              , Kubernetes/TypesUnion.Service c.Service.indexed-search
+              , Kubernetes/TypesUnion.Service c.Service.indexed-search-indexer
               ]
             }
         )

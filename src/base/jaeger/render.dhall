@@ -12,9 +12,9 @@ let ToList =
         ( λ(c : component) →
             Kubernetes/List::{
             , items =
-              [ Kubernetes/TypesUnion.Deployment c.Deployment
-              , Kubernetes/TypesUnion.Service c.Collector
-              , Kubernetes/TypesUnion.Service c.Query
+              [ Kubernetes/TypesUnion.Deployment c.Deployment.jaeger
+              , Kubernetes/TypesUnion.Service c.Service.jaeger-collector
+              , Kubernetes/TypesUnion.Service c.Service.jaeger-query
               ]
             }
         )

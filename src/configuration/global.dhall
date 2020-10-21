@@ -26,8 +26,6 @@ let PreciseCodeIntel/configuration =
 
 let Redis/configuration = ../base/redis/configuration.dhall
 
-let Replacer/configuration = ../base/replacer/configuration.dhall
-
 let QueryRunner/configuration = ../base/query-runner/configuration.dhall
 
 let Prometheus/configuration = ../base/prometheus/configuration.dhall
@@ -54,7 +52,6 @@ let configuration =
           , Grafana : Grafana/configuration.Type
           , PreciseCodeIntel : PreciseCodeIntel/configuration.Type
           , Redis : Redis/configuration.Type
-          , Replacer : Replacer/configuration.Type
           , QueryRunner : QueryRunner/configuration.Type
           , Prometheus : Prometheus/configuration.Type
           , StorageClass : StorageClass/configuration.Type
@@ -75,7 +72,6 @@ let configuration =
         , Grafana = Grafana/configuration.default
         , PreciseCodeIntel = PreciseCodeIntel/configuration.default
         , Redis = Redis/configuration.default
-        , Replacer = Replacer/configuration.default
         , QueryRunner = QueryRunner/configuration.default
         , Prometheus = Prometheus/configuration.default
         , StorageClass = StorageClass/configuration.default

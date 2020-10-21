@@ -12,11 +12,11 @@ let ToList =
         ( λ(c : component) →
             Kubernetes/List::{
             , items =
-              [ Kubernetes/TypesUnion.Deployment c.Deployment.
-              , Kubernetes/TypesUnion.Service c.Service
+              [ Kubernetes/TypesUnion.Deployment c.Deployment.codeintel-db
+              , Kubernetes/TypesUnion.Service c.Service.codeintel-db
               , Kubernetes/TypesUnion.PersistentVolumeClaim
-                  c.PersistentVolumeClaim
-              , Kubernetes/TypesUnion.ConfigMap c.ConfigMap
+                  c.PersistentVolumeClaim.codeintel-db
+              , Kubernetes/TypesUnion.ConfigMap c.ConfigMap.codeintel-db-conf
               ]
             }
         )
