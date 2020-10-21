@@ -36,6 +36,8 @@ let StorageClass/Generate = ./storage-class/generate.dhall
 
 let IngressNginx/Generate = ./ingress-nginx/generate.dhall
 
+let Code-intel-db/Generate = ./code-intel-db/generate.dhall
+
 let component = ./component.dhall
 
 let Configuration/global = ../configuration/global.dhall
@@ -61,6 +63,7 @@ let Generate =
             , Syntect-Server = SyntaxHighlighter/Generate c
             , Base = StorageClass/Generate c
             , IngressNginx = IngressNginx/Generate c
+            , Codeintel-Db = Code-intel-db/Generate c
             }
         )
       : ∀(c : Configuration/global.Type) → component

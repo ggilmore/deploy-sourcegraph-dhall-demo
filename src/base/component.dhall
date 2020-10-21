@@ -36,6 +36,8 @@ let StorageClass/Component = ./storage-class/component.dhall
 
 let IngressNginx/Component = ./ingress-nginx/component.dhall
 
+let Codeintel-db/Component = ./code-intel-db/component.dhall
+
 let component =
       { Frontend : Frontend/Component
       , Cadvisor : Cadvisor/Component
@@ -56,6 +58,7 @@ let component =
       , Syntect-Server : SyntaxHighlighter/Component
       , Base : StorageClass/Component
       , IngressNginx : IngressNginx/Component
+      , Codeintel-Db : Codeintel-db/Component
       }
 
 in  component
