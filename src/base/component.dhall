@@ -30,14 +30,19 @@ let Symbols/Component = ./symbols/component.dhall
 
 let SyntaxHighlighter/Component = ./syntax-highlighter/component.dhall
 
-let StorageClass/Component = ./storage-class/component.dhall
-
-let IngressNginx/Component = ./ingress-nginx/component.dhall
-
 let Codeintel-db/Component = ./code-intel-db/component.dhall
 
+let Kubernetes/Service = ../deps/k8s/schemas/io.k8s.api.core.v1.Service.dhall
+
+let Kubernetes/StorageClass =
+      ../deps/k8s/schemas/io.k8s.api.storage.v1.StorageClass.dhall
+
 let component =
-      { Frontend : Frontend/Component
+      { Base :
+          { Service : { backend : Kubernetes/Service.Type }
+          , StorageClass : { sourcegraph : Kubernetes/StorageClass.Type }
+          }
+      , Frontend : Frontend/Component
       , Cadvisor : Cadvisor/Component
       , Github-Proxy : GithubProxy/Component
       , Gitserver : Gitserver/Component
@@ -53,8 +58,6 @@ let component =
       , Searcher : Searcher/Component
       , Symbols : Symbols/Component
       , Syntect-Server : SyntaxHighlighter/Component
-      , Base : StorageClass/Component
-      , IngressNginx : IngressNginx/Component
       , Codeintel-Db : Codeintel-db/Component
       }
 
