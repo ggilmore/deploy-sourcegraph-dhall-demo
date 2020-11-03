@@ -5,6 +5,8 @@ let Kubernetes/EnvVar =
 
 let Base/render = ./src/base/render.dhall
 
+let Base/generate = ./src/base/generate.dhall
+
 let Configuration/global = ./src/configuration/global.dhall
 
 let Configuration/cloudProvider = ./src/configuration/cloud-provider.dhall
@@ -15,4 +17,5 @@ in  { Configuration =
       , EnvVar = Kubernetes/EnvVar
       }
     , Render = Base/render
+    , Generate = Base/generate
     }
