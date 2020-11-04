@@ -127,7 +127,7 @@ let Deployment/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/searcher:insiders@sha256:83067d2a03d5de115497c01f95a09a09d208c4ba60b6fc7adfb6270a104ce397"
+                "index.docker.io/sourcegraph/searcher:3.21.2@sha256:2b48885aabb714cea6c1b516ba5d27aca78d992b5965253f50322a8dc2b325df"
                 overrides.image
 
         let resources =
@@ -259,7 +259,7 @@ let Deployment/generate =
                             }
                           ]
                         , image = Some
-                            "index.docker.io/sourcegraph/jaeger-agent:insiders@sha256:f3faf496fe750ce75e6304f9ac10d8e1f42c9c9bdab3ab0c2fbf77a8d26084a4"
+                            "index.docker.io/sourcegraph/jaeger-agent:3.21.2@sha256:9141a2f8e46ae38193820c612df30e0911ee614a9c4f0c647b363f6ae1a1cdc2"
                         , name = "jaeger-agent"
                         , ports = Some
                           [ Kubernetes/ContainerPort::{

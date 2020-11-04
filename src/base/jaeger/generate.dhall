@@ -216,7 +216,7 @@ let Deployment/generate =
                       [ Kubernetes/Container::{
                         , args = Some [ "--memory.max-traces=20000" ]
                         , image = Some
-                            "index.docker.io/sourcegraph/jaeger-all-in-one:insiders@sha256:b723668550f539dc211cd6e1943edb0a0871af4f58e55e9b0ec7523109322e3d"
+                            "index.docker.io/sourcegraph/jaeger-all-in-one:3.21.2@sha256:95f31121b60cfb0f690c013e0fcb105a09b884b6ae6da8ebe2f23c9f6d62d397"
                         , name = "jaeger"
                         , ports = Some
                           [ Kubernetes/ContainerPort::{

@@ -897,7 +897,7 @@ let out =
                     , "if [ -d /data/pgdata-11 ]; then chmod 750 /data/pgdata-11; fi"
                     ]
                   , image = Some
-                      "sourcegraph/alpine:3.10@sha256:4d05cd5669726fc38823e92320659a6d1ef7879e62268adec5df658a0bacf65c"
+                      "sourcegraph/alpine:3.12@sha256:133a0a767b836cf86a011101995641cf1b5cbefb3dd212d78d7be145adde636d"
                   , name = "correct-data-dir-permissions"
                   , securityContext = Some Kubernetes/SecurityContext::{
                     , runAsUser = Some 0

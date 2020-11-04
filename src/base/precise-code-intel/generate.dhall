@@ -198,7 +198,7 @@ let BundleManager/Deployment/Containers/BundleManager/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/precise-code-intel-bundle-manager:insiders@sha256:defc89dbf8713541c08321acbab5d145099a300703949d938b491be68617d351"
+                "index.docker.io/sourcegraph/precise-code-intel-bundle-manager:3.21.2@sha256:467501742ec4c2595799664321671cf03ff13549b05b63b3a8e9b5c52f99fd99"
                 overrides.image
 
         let additionalEnvironmentVariables =
@@ -441,7 +441,7 @@ let Worker/Deployment/Containers/Worker/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/precise-code-intel-worker:insiders@sha256:7ad054d00a04777c11d42fa27d805b5f421b77b93ed6c112bdd89ad54c8da77d"
+                "index.docker.io/sourcegraph/precise-code-intel-worker:3.21.2@sha256:77973d2d7b07702c2d9e456098b71c430b6c08966b3b028409d68c7837e5a950"
                 overrides.image
 
         let additionalEnvironmentVariables =

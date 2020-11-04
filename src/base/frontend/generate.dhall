@@ -225,7 +225,7 @@ let frontendContainer/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/frontend:insiders@sha256:834e9a0420c4490775bccb45a2e1e28b27dee9314eca56f8e605f84ff82b2cd9"
+                "index.docker.io/sourcegraph/frontend:3.21.2@sha256:0b11ad9197debc409c77f057d4d2b72147d5d2044c40ac16296c68d3ed1e21d3"
                 overrides.image
 
         let container =

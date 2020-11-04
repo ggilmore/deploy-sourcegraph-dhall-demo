@@ -106,7 +106,7 @@ let Deployment/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/prometheus:insiders@sha256:be2484ab1f5b08d6329ad7489d9fbefc8949141de17cec66dfd6bda5a4efd718"
+                "index.docker.io/sourcegraph/prometheus:10.0.11@sha256:9164d49dfc146a76bee79b52f771291f47fefea5ca71e301c2bbcf318a5f87c7"
                 overrides.image
 
         let resources =

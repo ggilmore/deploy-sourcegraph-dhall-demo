@@ -160,7 +160,7 @@ let StatefulSet/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/grafana:insiders@sha256:6cde769ff3d80fdd34666d6cc785445cb4779369d4037590fda7c4eed4ddcca5"
+                "index.docker.io/sourcegraph/grafana:10.0.13@sha256:2d7fbbda9ae9797145a4769a1503dfbe3b78f6591afceedd6af351c95636029e"
                 overrides.image
 
         let resources =

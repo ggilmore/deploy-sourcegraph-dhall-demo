@@ -142,7 +142,7 @@ let postgresContainer/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/postgres-11.4:insiders@sha256:63090799b34b3115a387d96fe2227a37999d432b774a1d9b7966b8c5d81b56ad"
+                "index.docker.io/sourcegraph/postgres-11.4:3.21.2@sha256:a55fea6638d478c2368c227d06a1a2b7a2056b693967628427d41c92d9209e97"
                 overrides.image
 
         let resources =

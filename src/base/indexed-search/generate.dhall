@@ -156,7 +156,7 @@ let zoektWebServerContainer/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/indexed-searcher:insiders@sha256:fcf03182a79aaf48252f74e47204088a2db4f11620c97dfbca0721f61521fe3c"
+                "index.docker.io/sourcegraph/indexed-searcher:3.21.2@sha256:fcf03182a79aaf48252f74e47204088a2db4f11620c97dfbca0721f61521fe3c"
                 overrides.image
 
         let resources =
@@ -216,7 +216,7 @@ let zoektIndexServerContainer/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/search-indexer:insiders@sha256:315e2f1994d80cf0cdbc3c9d46a568f406b3a08ce4f6dd372a4225bcfebc4f2f"
+                "index.docker.io/sourcegraph/search-indexer:3.21.2@sha256:315e2f1994d80cf0cdbc3c9d46a568f406b3a08ce4f6dd372a4225bcfebc4f2f"
                 overrides.image
 
         let resources =

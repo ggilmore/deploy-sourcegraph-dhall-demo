@@ -85,7 +85,7 @@ let DaemonSet/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/cadvisor:insiders@sha256:fc44bfeb8ac74e8476082cce046a023a6c321348aeb83049328a96c90eda70fb"
+                "index.docker.io/sourcegraph/cadvisor:3.21.2@sha256:74986407526b6b6c0a9d6f5d2ad56d8f3c3dd513fc37bda237322d020a124701"
                 overrides.image
 
         let resources =

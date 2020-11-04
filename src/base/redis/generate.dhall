@@ -143,7 +143,7 @@ let cacheContainer/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/redis-cache:insiders@sha256:7820219195ab3e8fdae5875cd690fed1b2a01fd1063bd94210c0e9d529c38e56"
+                "index.docker.io/sourcegraph/redis-cache:3.21.2@sha256:7820219195ab3e8fdae5875cd690fed1b2a01fd1063bd94210c0e9d529c38e56"
                 overrides.image
 
         let resources =
@@ -374,7 +374,7 @@ let storeContainer/generate =
         let image =
               Optional/default
                 Text
-                "index.docker.io/sourcegraph/redis-store:insiders@sha256:e8467a8279832207559bdfbc4a89b68916ecd5b44ab5cf7620c995461c005168"
+                "index.docker.io/sourcegraph/redis-store:3.21.2@sha256:e8467a8279832207559bdfbc4a89b68916ecd5b44ab5cf7620c995461c005168"
                 overrides.image
 
         let resources =
